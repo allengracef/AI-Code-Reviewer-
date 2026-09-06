@@ -4,6 +4,7 @@ ALLOWED_EXTENSIONS = {".py",".java",".js"}
 MAX_FILE_SIZE = 25*1024*1024
 from app.services.language import detect_language
 from app.services.review import review_code
+from fastapi.concurrency import run_in_threadpool
 
 router = APIRouter()
 
@@ -32,7 +33,7 @@ async def upload_code(file:UploadFile = File(...)):
         )
     language = detect_language(extension)
 
-    review = review_code(source_code,language)
+    review = await run_in_threadpool(review_code, source_code, language)
 
     return {
         "filename":file.filename,

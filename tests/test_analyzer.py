@@ -15,6 +15,7 @@ def test():
 
     assert isinstance(issues, list)
     assert len(issues) > 0
+    assert all(issue["source"] == "STATIC_ANALYSIS" for issue in issues)
 
 
 def test_analyze_python_clean_code():

@@ -33,13 +33,14 @@ def analyze_python(source_code: str) -> list[dict]:
         return [
             {
                 "code": issue["code"],
-                "severity":"LOW",
-                "category":"STYLE",
+                "source": "STATIC_ANALYSIS",
+                "severity": "LOW",
+                "category": "STYLE",
                 "message": issue["message"],
                 "line": issue["location"]["row"],
                 "column": issue["location"]["column"],
-                "explanation":None,
-                "suggestion":None,
+                "explanation": None,
+                "suggestion": None,
             }
             for issue in issues
         ]
