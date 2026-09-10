@@ -1,15 +1,10 @@
 from io import BytesIO
 from unittest.mock import patch
 
-from fastapi.testclient import TestClient
-
 from app.main import app
 
 
-client = TestClient(app)
-
-
-def test_upload_python_file():
+def test_upload_python_file(client):
     code = """
 import os
 
@@ -41,7 +36,7 @@ def test():
     assert len(data["review"]["issues"]) > 0
 
 
-def test_upload_unsupported_file():
+def test_upload_unsupported_file(client):
     response = client.post(
         "/api/v1/reviews/upload",
         files={
@@ -56,7 +51,7 @@ def test_upload_unsupported_file():
     assert response.status_code == 400
 
 
-def test_upload_runs_complete_review_pipeline():
+def test_upload_runs_complete_review_pipeline(client):
     code = """
 password = "admin123"
 
@@ -92,7 +87,10 @@ def test():
 
     with patch(
         "app.services.review.review_with_ai",
-        return_value=ai_issues,
+        return_value={
+            "summary": "Code review completed.",
+            "issues": ai_issues,
+        },
     ):
         response = client.post(
             "/api/v1/reviews/upload",

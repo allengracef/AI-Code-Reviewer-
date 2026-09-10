@@ -30,8 +30,8 @@ def add(a, b):
 
         result = review_with_ai(source_code, "python")
 
-    assert isinstance(result, list)
-    assert result == []
+    assert isinstance(result, dict)
+    assert result["issues"] == []
 
 
 def test_ai_reviewer_accepts_different_languages():
@@ -47,8 +47,8 @@ public class Test {
 
         result = review_with_ai(source_code, "java")
 
-    assert isinstance(result, list)
-    assert result == []
+    assert isinstance(result, dict)
+    assert result["issues"] == []
 
 
 def test_ai_reviewer_rejects_invalid_json():
@@ -164,19 +164,20 @@ def calculate(users, transactions):
 
         result = review_with_ai(source_code, "python")
 
-    assert isinstance(result, list)
-    assert len(result) == 3
+    assert isinstance(result, dict)
+    issues = result["issues"]
+    assert len(issues) == 3
 
     assert all(
         issue["source"] == "AI"
-        for issue in result
+        for issue in issues
     )
 
-    assert result[0]["severity"] == "HIGH"
-    assert result[0]["category"] == "SECURITY"
+    assert issues[0]["severity"] == "HIGH"
+    assert issues[0]["category"] == "SECURITY"
 
-    assert result[1]["severity"] == "CRITICAL"
-    assert result[1]["category"] == "SECURITY"
+    assert issues[1]["severity"] == "CRITICAL"
+    assert issues[1]["category"] == "SECURITY"
 
-    assert result[2]["severity"] == "MEDIUM"
-    assert result[2]["category"] == "PERFORMANCE"
+    assert issues[2]["severity"] == "MEDIUM"
+    assert issues[2]["category"] == "PERFORMANCE"

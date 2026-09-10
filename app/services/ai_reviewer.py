@@ -1,32 +1,49 @@
 import json
-import os
 from typing import Any
 
-from dotenv import load_dotenv
 from groq import Groq
+from tenacity import retry, stop_after_attempt, wait_exponential, retry_if_exception_type
 
+from app.core.config import settings
 from app.schemas.review import ReviewIssue
 
-load_dotenv()
+_groq_client: Groq | None = None
 
-_groq_client = None
 
-def _get_groq_client():
+def _get_groq_client() -> Groq:
     global _groq_client
     if _groq_client is None:
-        api_key = os.getenv("GROQ_API_KEY")
-        if not api_key:
+        if not settings.GROQ_API_KEY:
             raise RuntimeError("GROQ_API_KEY is not configured.")
-        _groq_client = Groq(api_key=api_key)
+        _groq_client = Groq(api_key=settings.GROQ_API_KEY)
     return _groq_client
 
 
-def review_with_ai(source_code: str, language: str) -> list[dict[str, Any]]:
+def _strip_markdown_fences(text: str) -> str:
+    text = text.strip()
+    if text.startswith("```json"):
+        text = text[7:]
+    if text.startswith("```"):
+        text = text[3:]
+    if text.endswith("```"):
+        text = text[:-3]
+    return text.strip()
+
+
+@retry(
+    retry=retry_if_exception_type(Exception),
+    stop=stop_after_attempt(3),
+    wait=wait_exponential(multiplier=1, min=2, max=10),
+    reraise=True,
+)
+def review_with_ai(source_code: str, language: str) -> dict[str, Any]:
     """
     Review source code using a Groq-hosted AI model.
-    """
 
-    model = os.getenv("GROQ_MODEL", "llama-3.1-70b-versatile")
+    Returns a dict with keys:
+        - "summary": str  — a concise overall assessment
+        - "issues": list[dict]  — validated issue dicts
+    """
     client = _get_groq_client()
 
     prompt = (
@@ -55,7 +72,7 @@ def review_with_ai(source_code: str, language: str) -> list[dict[str, Any]]:
         "9. Look for incorrect error handling and resource management.\n"
         "10. Look for design choices that make the code difficult to maintain.\n"
         "11. Do not invent problems that are not supported by the code.\n"
-        "12. If the code is good, return an empty array instead of inventing issues.\n\n"
+        "12. If the code is good, return an empty issues array instead of inventing issues.\n\n"
 
         "Severity guidelines:\n"
         "- LOW: Minor issue with limited impact.\n"
@@ -73,11 +90,13 @@ def review_with_ai(source_code: str, language: str) -> list[dict[str, Any]]:
         "- MAINTAINABILITY: Code that will be difficult to modify or extend.\n"
         "- BEST_PRACTICE: Violation of an important engineering practice.\n\n"
 
-        "Return ONLY valid JSON.\n"
-        "Do not use Markdown.\n"
-        "Do not include explanations outside the JSON array.\n\n"
+        "Return ONLY valid JSON — no Markdown, no prose outside the JSON.\n\n"
 
-        "Each issue must contain exactly these fields:\n"
+        "Return a single JSON object with exactly two keys:\n"
+        '  "summary": a concise 1-3 sentence overall assessment of the code quality.\n'
+        '  "issues": an array of issue objects.\n\n'
+
+        "Each issue object must contain exactly these fields:\n"
         "- code\n"
         "- severity\n"
         "- category\n"
@@ -87,22 +106,21 @@ def review_with_ai(source_code: str, language: str) -> list[dict[str, Any]]:
         "- explanation\n"
         "- suggestion\n\n"
 
-        "Do NOT include a source field.\n"
-        "The application will assign the source automatically.\n\n"
+        "Do NOT include a source field — the application assigns it.\n\n"
 
         "Allowed severity values: LOW, MEDIUM, HIGH, CRITICAL\n"
         "Allowed category values: BUG, SECURITY, PERFORMANCE, ARCHITECTURE, "
         "READABILITY, MAINTAINABILITY, BEST_PRACTICE\n\n"
 
-        "If there are no meaningful issues, return exactly:\n"
-        "[]\n\n"
+        "Example response shape:\n"
+        '{"summary": "Overall the code is...", "issues": [...]}\n\n'
 
         "Source code:\n\n"
         f"{source_code}"
     )
 
-    response = client.chat.completions.create(
-        model=model,
+    response = _get_groq_client().chat.completions.create(
+        model=settings.GROQ_MODEL,
         messages=[
             {
                 "role": "system",
@@ -117,47 +135,41 @@ def review_with_ai(source_code: str, language: str) -> list[dict[str, Any]]:
             },
         ],
         temperature=0.1,
+        timeout=60,
     )
 
-    content = response.choices[0].message.content
-
-    if not content:
-        return []
-
-    content = content.strip()
-    if content.startswith("```json"):
-        content = content[7:]
-    if content.startswith("```"):
-        content = content[3:]
-    if content.endswith("```"):
-        content = content[:-3]
-    content = content.strip()
+    content = response.choices[0].message.content or ""
+    content = _strip_markdown_fences(content)
 
     try:
         data = json.loads(content)
     except json.JSONDecodeError as exc:
         raise RuntimeError("The AI returned invalid JSON.") from exc
 
-    if not isinstance(data, list):
-        raise RuntimeError("The AI response must be a JSON array.")
+    if isinstance(data, list):
+        issues_raw = data
+        summary = "Code review completed."
+    elif isinstance(data, dict):
+        if "issues" not in data:
+            raise RuntimeError("The AI response 'issues' must be a JSON array.")
+        issues_raw = data["issues"]
+        summary = data.get("summary", "Code review completed.")
+    else:
+        raise RuntimeError("Unexpected AI response shape.")
 
-    # The AI does not control the source value.
-    # The backend assigns it because this finding came from the AI reviewer.
-    for issue in data:
+    if not isinstance(issues_raw, list):
+        raise RuntimeError("The AI response 'issues' must be a JSON array.")
+
+    for issue in issues_raw:
         if isinstance(issue, dict):
             issue["source"] = "AI"
 
     try:
-        validated_issues = [
-            ReviewIssue.model_validate(issue)
-            for issue in data
-        ]
+        validated = [ReviewIssue.model_validate(issue) for issue in issues_raw]
     except Exception as exc:
-        raise RuntimeError(
-            "The AI returned an invalid issue structure."
-        ) from exc
+        raise RuntimeError("The AI returned an invalid issue structure.") from exc
 
-    return [
-        issue.model_dump()
-        for issue in validated_issues
-    ]
+    return {
+        "summary": summary,
+        "issues": [issue.model_dump() for issue in validated],
+    }

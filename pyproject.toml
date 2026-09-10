@@ -1,7 +1,7 @@
 [project]
 name = "ai-codereviwer"
 version = "0.1.0"
-description = "Add your description here"
+description = "AI-powered code review API — combines static analysis (ruff / pattern-based JS) with Groq LLM review to surface bugs, security issues, and best-practice violations."
 readme = "README.md"
 authors = [
     { name = "allengracef", email = "allengracefrancis@gmail.com" }
@@ -13,6 +13,7 @@ dependencies = [
     "groq>=0.10.0",
     "uvicorn>=0.30.0",
     "python-multipart>=0.0.18",
+    "sqlalchemy>=2.0.52",
 ]
 
 [project.scripts]
