@@ -1,10 +1,11 @@
+import urllib.request
 from fastapi import APIRouter, Depends, File, HTTPException, Query, UploadFile, status
 from fastapi.concurrency import run_in_threadpool
 from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models import IssueRecord, ReviewRecord, User
-from app.schemas.review import CodeFile
+from app.schemas.review import CodeFile, CodePasteRequest, GithubImportRequest
 from app.services.auth import get_current_user
 from app.services.language import detect_language
 from app.services.review import review_code
@@ -36,6 +37,9 @@ def _serialize_review(r: ReviewRecord, include_issues: bool = True) -> dict:
         "filename": r.filename,
         "language": r.language,
         "summary": r.summary,
+        "time_complexity": r.time_complexity,
+        "space_complexity": r.space_complexity,
+        "refactored_code": r.refactored_code,
         "created_at": r.created_at,
         "updated_at": r.updated_at,
         "issue_count": len(r.issues),
@@ -99,6 +103,9 @@ async def upload_code(
         filename=filename,
         language=language,
         summary=review.get("summary"),
+        time_complexity=review.get("time_complexity"),
+        space_complexity=review.get("space_complexity"),
+        refactored_code=review.get("refactored_code"),
     )
     db.add(record)
     db.flush()  # populate record.id without committing yet
@@ -130,6 +137,168 @@ async def upload_code(
         "language": language,
         "review": review,
     }
+
+
+@router.post("/paste", response_model=CodeFile)
+async def paste_code(
+    payload: CodePasteRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Review pasted code or fetched code content directly."""
+    filename = payload.filename or "snippet.py"
+    extension = "." + filename.split(".")[-1].lower() if "." in filename else ".py"
+    if extension not in ALLOWED_EXTENSIONS:
+        extension = ".py"
+        filename = filename + ".py"
+
+    source_code = payload.code
+    if not source_code.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Code snippet cannot be empty.",
+        )
+
+    language = detect_language(extension)
+    review = await run_in_threadpool(review_code, source_code, language)
+
+    record = ReviewRecord(
+        user_id=current_user.id,
+        filename=filename,
+        language=language,
+        summary=review.get("summary"),
+        time_complexity=review.get("time_complexity"),
+        space_complexity=review.get("space_complexity"),
+        refactored_code=review.get("refactored_code"),
+    )
+    db.add(record)
+    db.flush()
+
+    for issue in review.get("issues", []):
+        db.add(
+            IssueRecord(
+                review_id=record.id,
+                source=issue.get("source", ""),
+                severity=issue.get("severity", ""),
+                category=issue.get("category", ""),
+                message=issue.get("message", ""),
+                line=issue.get("line"),
+                column=issue.get("column"),
+                code=issue.get("code"),
+                explanation=issue.get("explanation"),
+                suggestion=issue.get("suggestion"),
+            )
+        )
+
+    db.commit()
+
+    return {
+        "filename": filename,
+        "content_type": "text/plain",
+        "size": len(source_code.encode("utf-8")),
+        "code": source_code,
+        "language": language,
+        "review": review,
+    }
+
+
+@router.post("/github", response_model=CodeFile)
+async def import_from_github(
+    payload: GithubImportRequest,
+    db: Session = Depends(get_db),
+    current_user: User = Depends(get_current_user),
+):
+    """Fetch file directly from GitHub and perform AI + static review."""
+    url = payload.url.strip()
+    if not url:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="GitHub URL cannot be empty.",
+        )
+
+    # Convert standard github URL to raw user content URL if needed
+    raw_url = url
+    if "github.com" in url and "raw.githubusercontent.com" not in url:
+        raw_url = url.replace("github.com", "raw.githubusercontent.com").replace("/blob/", "/")
+
+    # Extract filename from URL
+    filename = url.split("?")[0].split("/")[-1] or "github_file.py"
+    if "." not in filename:
+        filename += ".py"
+
+    extension = "." + filename.split(".")[-1].lower()
+    if extension not in ALLOWED_EXTENSIONS:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Unsupported file type '{extension}' from GitHub. Allowed extensions: {', '.join(ALLOWED_EXTENSIONS)}",
+        )
+
+    # Fetch contents using urllib
+    try:
+        def _fetch():
+            req = urllib.request.Request(
+                raw_url,
+                headers={"User-Agent": "BugLens-App/1.0"}
+            )
+            with urllib.request.urlopen(req, timeout=10) as resp:
+                return resp.read().decode("utf-8")
+
+        source_code = await run_in_threadpool(_fetch)
+    except Exception as exc:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Failed to fetch file from GitHub. Ensure the repository and file URL are public. Details: {str(exc)}",
+        )
+
+    if not source_code.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="The fetched GitHub file is empty.",
+        )
+
+    language = detect_language(extension)
+    review = await run_in_threadpool(review_code, source_code, language)
+
+    record = ReviewRecord(
+        user_id=current_user.id,
+        filename=filename,
+        language=language,
+        summary=review.get("summary"),
+        time_complexity=review.get("time_complexity"),
+        space_complexity=review.get("space_complexity"),
+        refactored_code=review.get("refactored_code"),
+    )
+    db.add(record)
+    db.flush()
+
+    for issue in review.get("issues", []):
+        db.add(
+            IssueRecord(
+                review_id=record.id,
+                source=issue.get("source", ""),
+                severity=issue.get("severity", ""),
+                category=issue.get("category", ""),
+                message=issue.get("message", ""),
+                line=issue.get("line"),
+                column=issue.get("column"),
+                code=issue.get("code"),
+                explanation=issue.get("explanation"),
+                suggestion=issue.get("suggestion"),
+            )
+        )
+
+    db.commit()
+
+    return {
+        "filename": filename,
+        "content_type": "text/plain",
+        "size": len(source_code.encode("utf-8")),
+        "code": source_code,
+        "language": language,
+        "review": review,
+    }
+
+
 
 
 @router.get("/")

@@ -1,0 +1,59 @@
+.upload-panel {
+  padding: 1.2rem;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+}
+
+.upload-title {
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: rgba(255,255,255,0.45);
+  margin: 0 0 0.75rem;
+}
+
+.drop-zone {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.4rem;
+  padding: 1.5rem 1rem;
+  border: 1.5px dashed rgba(255,255,255,0.15);
+  border-radius: 14px;
+  cursor: pointer;
+  transition: border-color 0.2s, background 0.2s;
+  text-align: center;
+  min-height: 110px;
+}
+
+.drop-zone:hover, .drop-zone.dragging {
+  border-color: rgba(36, 87, 255, 0.5);
+  background: rgba(36, 87, 255, 0.06);
+}
+
+.drop-zone.loading { cursor: default; opacity: 0.8; }
+
+.drop-icon { font-size: 1.8rem; }
+.drop-label { font-size: 0.85rem; color: rgba(255,255,255,0.65); }
+.drop-label u { color: #2457FF; }
+.drop-hint { font-size: 0.74rem; color: rgba(255,255,255,0.3); }
+
+.upload-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  color: rgba(255,255,255,0.5);
+  font-size: 0.85rem;
+}
+
+.upload-error {
+  margin-top: 0.6rem;
+  font-size: 0.8rem;
+  color: #fca5a5;
+  background: rgba(239,68,68,0.1);
+  border: 1px solid rgba(239,68,68,0.25);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+}

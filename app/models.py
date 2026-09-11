@@ -46,6 +46,9 @@ class ReviewRecord(Base):
     filename: Mapped[str] = mapped_column(String(255), nullable=False)
     language: Mapped[str] = mapped_column(String(50), nullable=False)
     summary: Mapped[str | None] = mapped_column(Text, nullable=True)
+    time_complexity: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    space_complexity: Mapped[str | None] = mapped_column(String(50), nullable=True)
+    refactored_code: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,

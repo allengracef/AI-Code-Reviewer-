@@ -86,6 +86,10 @@ REFRESH_TOKEN_EXPIRE_DAYS=7
 # Groq AI Configuration
 GROQ_API_KEY=gsk_your_groq_api_key_here
 GROQ_MODEL=llama-3.1-70b-versatile
+
+# Database (defaults to SQLite; swap for PostgreSQL in production)
+DATABASE_URL=sqlite:///./reviews.db
+# DATABASE_URL=postgresql://user:password@localhost:5432/ai_reviewer
 ```
 
 ---

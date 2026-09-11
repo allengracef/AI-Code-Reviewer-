@@ -30,7 +30,7 @@ def analyze_python(source_code: str) -> list[dict]:
                 "code": issue["code"],
                 "source": "STATIC_ANALYSIS",
                 "severity": "LOW",
-                "category": "STYLE",
+                "category": "BEST_PRACTICE",
                 "message": issue["message"],
                 "line": issue["location"]["row"],
                 "column": issue["location"]["column"],
@@ -103,6 +103,83 @@ def analyze_javascript(source_code: str) -> list[dict]:
     for pattern, severity, category, message, suggestion in _JS_PATTERNS:
         for match in pattern.finditer(source_code):
             # Determine 1-based line number from match position.
+            line_no = source_code[: match.start()].count("\n") + 1
+            col_no = match.start() - source_code.rfind("\n", 0, match.start())
+            findings.append(
+                {
+                    "code": None,
+                    "source": "STATIC_ANALYSIS",
+                    "severity": severity,
+                    "category": category,
+                    "message": message,
+                    "line": line_no,
+                    "column": col_no,
+                    "explanation": None,
+                    "suggestion": suggestion,
+                }
+            )
+
+    return findings
+
+
+# ── Java — pattern-based analysis ────────────────────────────────────────────
+_JAVA_PATTERNS: list[tuple[re.Pattern, str, str, str, str]] = [
+    # (pattern, severity, category, message, suggestion)
+    (
+        re.compile(r"\breturn\s+null\b", re.MULTILINE),
+        "MEDIUM", "BUG",
+        "Returning null can cause NullPointerExceptions in callers.",
+        "Return an Optional<T> or throw a meaningful exception instead of null.",
+    ),
+    (
+        re.compile(r"\bList\s*\b(?!<)", re.MULTILINE),
+        "LOW", "BEST_PRACTICE",
+        "Raw type List used without a type parameter.",
+        "Use a parameterized type such as List<String> to enable compile-time type checking.",
+    ),
+    (
+        re.compile(r"\bSystem\.out\.(print|println|printf)\s*\(", re.MULTILINE),
+        "LOW", "BEST_PRACTICE",
+        "System.out statement found in production code.",
+        "Replace with a proper logging framework such as SLF4J or java.util.logging.",
+    ),
+    (
+        re.compile(r"catch\s*\([^)]+\)\s*\{\s*\}", re.MULTILINE),
+        "HIGH", "BUG",
+        "Empty catch block silently swallows exceptions.",
+        "Log the exception or rethrow it as a more specific exception type.",
+    ),
+    (
+        re.compile(r'(?<![=!<>])==(?!=)\s*"', re.MULTILINE),
+        "HIGH", "BUG",
+        "String comparison with == checks reference equality, not value equality.",
+        'Use .equals() or Objects.equals() to compare String values.',
+    ),
+    (
+        re.compile(r"\bThread\.sleep\s*\(", re.MULTILINE),
+        "MEDIUM", "PERFORMANCE",
+        "Thread.sleep() is an imprecise and fragile way to introduce delays.",
+        "Use ScheduledExecutorService or a higher-level concurrency utility instead.",
+    ),
+    (
+        re.compile(
+            r'"\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}"'  # hardcoded IP
+            r'|"https?://[^"]{4,}"',                   # hardcoded URL
+            re.MULTILINE,
+        ),
+        "MEDIUM", "MAINTAINABILITY",
+        "Hardcoded IP address or URL found.",
+        "Move the value to a configuration file or environment variable.",
+    ),
+]
+
+
+def analyze_java(source_code: str) -> list[dict]:
+    """Run pattern-based static analysis on a Java snippet."""
+    findings: list[dict] = []
+
+    for pattern, severity, category, message, suggestion in _JAVA_PATTERNS:
+        for match in pattern.finditer(source_code):
             line_no = source_code[: match.start()].count("\n") + 1
             col_no = match.start() - source_code.rfind("\n", 0, match.start())
             findings.append(

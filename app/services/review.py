@@ -1,5 +1,5 @@
 from app.services.aggregator import aggregate_issues
-from app.services.analyzer import analyze_javascript, analyze_python
+from app.services.analyzer import analyze_java, analyze_javascript, analyze_python
 from app.services.ai_reviewer import review_with_ai
 
 
@@ -8,7 +8,7 @@ def review_code(source_code: str, language: str) -> dict:
     Run static analysis (if available) and AI review for the given source code.
 
     Returns a dict with:
-        language, summary, issues, suggestions
+        language, summary, issues
     """
     static_issues: list[dict] = []
 
@@ -16,6 +16,8 @@ def review_code(source_code: str, language: str) -> dict:
         static_issues = analyze_python(source_code)
     elif language == "javascript":
         static_issues = analyze_javascript(source_code)
+    elif language == "java":
+        static_issues = analyze_java(source_code)
 
     ai_result = review_with_ai(source_code, language)
     ai_issues = ai_result["issues"]
@@ -27,5 +29,4 @@ def review_code(source_code: str, language: str) -> dict:
         "language": language,
         "summary": summary,
         "issues": issues,
-        "suggestions": [],
     }

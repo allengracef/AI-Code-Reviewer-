@@ -1,0 +1,955 @@
+.dash-container {
+  min-height: 100vh;
+  background: #060919;
+  background-image: 
+    radial-gradient(circle at 70% 10%, rgba(36, 87, 255, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 10% 80%, rgba(168, 85, 247, 0.1) 0%, transparent 40%);
+  color: #ffffff;
+  display: flex;
+  flex-direction: column;
+}
+
+.dash-layout {
+  display: flex;
+  flex: 1;
+  padding: 100px 2rem 2rem; /* clear floating navbar */
+  max-width: 1440px;
+  margin: 0 auto;
+  width: 100%;
+  gap: 1.75rem;
+}
+
+/* ── 1. Left Sidebar ───────────────────────────────────────────────────────── */
+.dash-sidebar {
+  width: 250px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.btn-new-review {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  border-radius: 12px;
+  background: linear-gradient(135deg, #2457FF 0%, #1d4ed8 100%);
+  color: #ffffff;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  box-shadow: 0 4px 20px rgba(36, 87, 255, 0.4);
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.btn-new-review:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 25px rgba(36, 87, 255, 0.6);
+}
+
+.nav-menu {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.nav-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.65rem 0.85rem;
+  border-radius: 10px;
+  background: transparent;
+  border: 1px solid transparent;
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.15s;
+}
+
+.nav-menu-item:hover {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.05);
+}
+
+.nav-menu-item.active {
+  color: #ffffff;
+  background: rgba(36, 87, 255, 0.15);
+  border-color: rgba(36, 87, 255, 0.3);
+  font-weight: 600;
+}
+
+.sidebar-promo-card {
+  background: linear-gradient(135deg, rgba(36, 87, 255, 0.12) 0%, rgba(168, 85, 247, 0.12) 100%);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1.2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: auto;
+}
+
+.promo-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.promo-header h3 {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #ffffff;
+}
+
+.sidebar-promo-card p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.5;
+}
+
+.btn-learn-more {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.85rem;
+  border-radius: 999px;
+  background: rgba(36, 87, 255, 0.25);
+  border: 1px solid rgba(36, 87, 255, 0.4);
+  color: #ffffff;
+  font-size: 0.78rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: fit-content;
+  margin-top: 0.4rem;
+  transition: all 0.2s;
+}
+
+.btn-learn-more:hover {
+  background: rgba(36, 87, 255, 0.4);
+}
+
+.sidebar-footer {
+  padding-top: 1rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.sf-brand {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.sf-version {
+  font-size: 0.75rem;
+  color: rgba(255, 255, 255, 0.35);
+  padding-left: 1.5rem;
+}
+
+/* ── 2. Main Center Panel ─────────────────────────────────────────────────── */
+.dash-main {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.welcome-banner {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.welcome-title {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin: 0 0 0.4rem;
+  letter-spacing: -0.02em;
+}
+
+.welcome-sub {
+  margin: 0;
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.quote-box {
+  border-left: 2px solid #2457FF;
+  padding-left: 0.75rem;
+  color: rgba(255, 255, 255, 0.5);
+  font-style: italic;
+  font-size: 0.82rem;
+  max-width: 260px;
+}
+
+/* Upload Container */
+.upload-container {
+  display: flex;
+  gap: 1.25rem;
+  background: rgba(14, 20, 42, 0.65);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1.25rem;
+  margin-bottom: 1.75rem;
+}
+
+.upload-left {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.dropzone-box {
+  border: 2px dashed rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  transition: all 0.2s;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.dropzone-box:hover, .dropzone-box.dragging {
+  border-color: #2457FF;
+  background: rgba(36, 87, 255, 0.05);
+}
+
+.dropzone-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  cursor: pointer;
+}
+
+.cloud-icon-bg {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: rgba(36, 87, 255, 0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+}
+
+.dropzone-text {
+  font-size: 0.92rem;
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+}
+
+.browse-link {
+  color: #2457FF;
+  text-decoration: underline;
+}
+
+.dropzone-hint {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Paste & GitHub Input Boxes */
+.paste-box, .github-box {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.paste-header {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.paste-filename-input, .github-url-input {
+  flex: 1;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0.55rem 0.85rem;
+  color: #fff;
+  font-size: 0.85rem;
+  outline: none;
+}
+
+.paste-textarea {
+  width: 100%;
+  min-height: 120px;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0.85rem;
+  color: #e2e8f0;
+  font-family: monospace;
+  font-size: 0.85rem;
+  resize: vertical;
+  outline: none;
+}
+
+.btn-paste-submit, .btn-github-submit {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #2457FF;
+  color: #fff;
+  border: none;
+  padding: 0.55rem 1rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 0.85rem;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.github-input-group {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0.4rem 0.75rem;
+}
+
+.github-input-group .github-url-input {
+  border: none;
+  background: transparent;
+  padding: 0.2rem 0;
+}
+
+.github-hint {
+  margin: 0;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.upload-error-msg {
+  color: #ef4444;
+  font-size: 0.82rem;
+  margin-top: 0.6rem;
+}
+
+.loading-bar-indicator {
+  font-size: 0.82rem;
+  color: #38bdf8;
+  margin-top: 0.6rem;
+}
+
+/* Upload Right Tabs */
+.upload-right-tabs {
+  width: 200px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  border-left: 1px solid rgba(255, 255, 255, 0.08);
+  padding-left: 1.25rem;
+  justify-content: center;
+}
+
+.tab-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.6rem 0.85rem;
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.82rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.tab-btn:hover {
+  background: rgba(255, 255, 255, 0.06);
+  color: #fff;
+}
+
+.tab-btn.active {
+  background: rgba(36, 87, 255, 0.15);
+  border-color: rgba(36, 87, 255, 0.4);
+  color: #ffffff;
+  font-weight: 600;
+}
+
+/* ── 3. Review Detail Component ────────────────────────────────────────────── */
+.review-detail-card {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.rd-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.rd-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.rd-lang-icon { font-size: 1.4rem; }
+
+.rd-filename {
+  font-size: 1.4rem;
+  font-weight: 800;
+  margin: 0;
+}
+
+.rd-lang-badge, .rd-issue-count-badge {
+  font-size: 0.78rem;
+  padding: 0.2rem 0.6rem;
+  border-radius: 999px;
+}
+
+.rd-lang-badge {
+  background: rgba(36, 87, 255, 0.2);
+  color: #809fff;
+  border: 1px solid rgba(36, 87, 255, 0.4);
+}
+
+.rd-issue-count-badge {
+  background: rgba(255, 255, 255, 0.06);
+  color: rgba(255, 255, 255, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.rd-time-meta {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: rgba(255, 255, 255, 0.45);
+  font-size: 0.82rem;
+}
+
+.rd-fav-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+/* Summary Box */
+.rd-summary-box {
+  position: relative;
+  background: rgba(36, 87, 255, 0.08);
+  border: 1px solid rgba(36, 87, 255, 0.25);
+  border-radius: 14px;
+  padding: 1.2rem 2.5rem 1.2rem 1.2rem;
+  font-size: 0.92rem;
+  color: rgba(255, 255, 255, 0.85);
+  line-height: 1.6;
+}
+
+.summary-close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+}
+
+/* Metrics & Refactoring */
+.rd-metrics-row {
+  display: flex;
+  gap: 0.8rem;
+}
+
+.rd-metric-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: rgba(36, 87, 255, 0.15);
+  color: #E8F9FF;
+  padding: 0.35rem 0.85rem;
+  border-radius: 8px;
+  font-size: 0.85rem;
+  border: 1px solid rgba(36, 87, 255, 0.3);
+}
+
+.rd-refactored-box {
+  background: #0d1329;
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 12px;
+  padding: 1.2rem;
+}
+
+.rd-refactored-box h3 {
+  margin: 0 0 1rem;
+  font-size: 0.95rem;
+  color: #38bdf8;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.rd-refactored-box pre {
+  margin: 0;
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.4);
+  border-radius: 8px;
+  overflow-x: auto;
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #e2e8f0;
+}
+
+/* Filter Bar */
+.rd-filter-bar {
+  display: flex;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+
+.rd-filter-pill {
+  padding: 0.4rem 0.95rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(255, 255, 255, 0.03);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+
+.rd-filter-pill:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.rd-filter-pill.active {
+  background: #2457FF;
+  color: #ffffff;
+  border-color: #2457FF;
+  box-shadow: 0 0 15px rgba(36, 87, 255, 0.4);
+}
+
+/* Issues List */
+.rd-issues-list {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.rd-issue-card {
+  background: rgba(14, 20, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-left: 4px solid;
+  border-radius: 14px;
+  padding: 1.25rem;
+}
+
+.rd-issue-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 0.6rem;
+}
+
+.rd-sev-badge {
+  font-size: 0.72rem;
+  font-weight: 800;
+  padding: 0.15rem 0.5rem;
+  border-radius: 6px;
+  border: 1px solid;
+}
+
+.rd-cat-badge, .rd-src-badge, .rd-line-badge {
+  font-size: 0.75rem;
+  padding: 0.15rem 0.5rem;
+  border-radius: 999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.rd-more-btn {
+  margin-left: auto;
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.4);
+  cursor: pointer;
+}
+
+.rd-issue-message {
+  font-size: 0.98rem;
+  font-weight: 700;
+  margin: 0 0 0.5rem;
+}
+
+.rd-issue-explanation {
+  font-size: 0.86rem;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.6;
+  margin: 0 0 0.75rem;
+}
+
+.rd-issue-fix {
+  background: rgba(0, 0, 0, 0.35);
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  font-family: monospace;
+  font-size: 0.85rem;
+  color: #38bdf8;
+  line-height: 1.5;
+  border: 1px solid rgba(56, 189, 248, 0.15);
+}
+
+.fix-label {
+  font-weight: 700;
+  color: #38bdf8;
+}
+
+.rd-no-issues, .empty-detail-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  color: rgba(255, 255, 255, 0.4);
+  text-align: center;
+  gap: 1rem;
+}
+
+/* ── 4. Right Sidebar ──────────────────────────────────────────────────────── */
+.dash-right-sidebar {
+  width: 300px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.right-card {
+  background: rgba(14, 20, 42, 0.65);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 16px;
+  padding: 1.25rem;
+}
+
+.card-title {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0 0 1rem;
+  display: flex;
+  align-items: center;
+}
+
+/* Donut Chart Card */
+.summary-card-body {
+  display: flex;
+  align-items: center;
+  gap: 1.25rem;
+}
+
+.donut-container {
+  position: relative;
+  width: 90px;
+  height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.donut-chart {
+  width: 100%;
+  height: 100%;
+  transform: rotate(-90deg);
+}
+
+.donut-text {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  line-height: 1;
+}
+
+.donut-num {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: #ffffff;
+}
+
+.donut-label {
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-top: 0.2rem;
+}
+
+.legend-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.82rem;
+}
+
+.legend-item .dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.legend-item .dot.critical { background: #ef4444; }
+.legend-item .dot.high { background: #f97316; }
+.legend-item .dot.medium { background: #f59e0b; }
+.legend-item .dot.low { background: #3b82f6; }
+
+.legend-item .label {
+  color: rgba(255, 255, 255, 0.6);
+  flex: 1;
+}
+
+.legend-item .val {
+  font-weight: 700;
+  color: #ffffff;
+}
+
+/* Quick Tips Card */
+.tips-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.tips-list li {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+/* Rocket Card */
+.promo-rocket-card {
+  background: linear-gradient(135deg, rgba(168, 85, 247, 0.15) 0%, rgba(36, 87, 255, 0.15) 100%);
+  border-color: rgba(168, 85, 247, 0.2);
+}
+
+.rocket-icon-box {
+  width: 36px;
+  height: 36px;
+  border-radius: 10px;
+  background: rgba(168, 85, 247, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.75rem;
+}
+
+.promo-rocket-card h4 {
+  margin: 0 0 0.3rem;
+  font-size: 0.95rem;
+  font-weight: 700;
+}
+
+.promo-rocket-card p {
+  margin: 0;
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.6);
+  line-height: 1.5;
+}
+
+/* ── Reviews Grid / History View ─────────────────────────────────────────── */
+.reviews-list-section {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.section-title-text {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.reviews-grid-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 1rem;
+}
+
+.review-grid-card {
+  background: rgba(14, 20, 42, 0.6);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 14px;
+  padding: 1rem;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+
+.review-grid-card:hover, .review-grid-card.active {
+  border-color: #2457FF;
+  background: rgba(36, 87, 255, 0.1);
+}
+
+.rgc-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.5rem;
+}
+
+.rgc-title {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 700;
+  font-size: 0.95rem;
+}
+
+.rgc-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+
+.star-btn, .del-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0.2rem;
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.del-btn:hover { color: #ef4444; }
+
+.rgc-meta {
+  display: flex;
+  gap: 0.5rem;
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.5);
+  margin-bottom: 0.6rem;
+}
+
+.rgc-summary {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* ── Modals ────────────────────────────────────────────────────────────────── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(8px);
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.modal-content {
+  background: #0d1329;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 16px;
+  padding: 1.5rem;
+  width: 90%;
+  max-width: 480px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+}
+
+.modal-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1.25rem;
+}
+
+.modal-header h2 {
+  font-size: 1.15rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.modal-close-btn {
+  background: transparent;
+  border: none;
+  color: rgba(255, 255, 255, 0.5);
+  cursor: pointer;
+}
+
+.setting-group {
+  margin-bottom: 1.2rem;
+}
+
+.setting-group label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-bottom: 0.4rem;
+}
+
+.setting-input {
+  width: 100%;
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 8px;
+  padding: 0.6rem;
+  color: #fff;
+  font-size: 0.85rem;
+}
+
+.status-badge-row {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #4ade80;
+}
+
+.status-dot.green {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #4ade80;
+  box-shadow: 0 0 8px #4ade80;
+}
+
+.setting-desc {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.5);
+}

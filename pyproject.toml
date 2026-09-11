@@ -14,10 +14,13 @@ dependencies = [
     "uvicorn>=0.30.0",
     "python-multipart>=0.0.18",
     "sqlalchemy>=2.0.52",
+    "bcrypt>=4.0.0",
+    "python-jose[cryptography]>=3.3.0",
+    "pydantic-settings>=2.0.0",
+    "pydantic[email]>=2.0.0",
+    "tenacity>=8.0.0",
 ]
 
-[project.scripts]
-ai-codereviwer = "ai_codereviwer:main"
 
 [build-system]
 requires = ["uv_build>=0.12.7,<0.13.0"]
@@ -27,7 +30,7 @@ build-backend = "uv_build"
 dev = [
     "ruff>=0.16.5",
     "pytest>=8.0.0",
-    "httpx>=0.25.0",
+    "httpx2>=2.0.0",
 ]
 
 [tool.pytest.ini_options]

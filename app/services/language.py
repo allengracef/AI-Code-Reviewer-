@@ -3,5 +3,8 @@ LANGUAGE_MAP = {
     ".java": "java",
     ".js": "javascript",
 }
-def detect_language(extension: str) ->str:
+
+
+def detect_language(extension: str) -> str:
+    """Return the canonical language name for a file extension."""
     return LANGUAGE_MAP[extension]

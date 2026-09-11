@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="AI Code Reviewer (Full Stack)" type="CompoundRunConfigurationType">
+    <toRun name="Backend (uvicorn)" type="PythonConfigurationType" />
+    <toRun name="Frontend (Vite)" type="ShConfigurationType" />
+    <method v="2" />
+  </configuration>
+</component>

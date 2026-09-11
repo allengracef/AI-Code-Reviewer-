@@ -92,10 +92,13 @@ def review_with_ai(source_code: str, language: str) -> dict[str, Any]:
 
         "Return ONLY valid JSON — no Markdown, no prose outside the JSON.\n\n"
 
-        "Return a single JSON object with exactly two keys:\n"
+        "Return a single JSON object with exactly these keys:\n"
         '  "summary": a concise 1-3 sentence overall assessment of the code quality.\n'
+        '  "time_complexity": Big O notation for time complexity (if applicable, e.g., "O(n^2)").\n'
+        '  "space_complexity": Big O notation for space complexity (if applicable, e.g., "O(1)").\n'
+        '  "refactored_code": a fully refactored, better structured version of the code resolving the issues (omit if the code is already perfect).\n'
         '  "issues": an array of issue objects.\n\n'
-
+        
         "Each issue object must contain exactly these fields:\n"
         "- code\n"
         "- severity\n"
@@ -113,7 +116,7 @@ def review_with_ai(source_code: str, language: str) -> dict[str, Any]:
         "READABILITY, MAINTAINABILITY, BEST_PRACTICE\n\n"
 
         "Example response shape:\n"
-        '{"summary": "Overall the code is...", "issues": [...]}\n\n'
+        '{"summary": "Overall the code is...", "time_complexity": "O(n)", "space_complexity": "O(1)", "refactored_code": "def func():\\n    pass", "issues": [...]}\n\n'
 
         "Source code:\n\n"
         f"{source_code}"
@@ -149,11 +152,15 @@ def review_with_ai(source_code: str, language: str) -> dict[str, Any]:
     if isinstance(data, list):
         issues_raw = data
         summary = "Code review completed."
+        tc, sc, refactored = None, None, None
     elif isinstance(data, dict):
         if "issues" not in data:
             raise RuntimeError("The AI response 'issues' must be a JSON array.")
         issues_raw = data["issues"]
         summary = data.get("summary", "Code review completed.")
+        tc = data.get("time_complexity")
+        sc = data.get("space_complexity")
+        refactored = data.get("refactored_code")
     else:
         raise RuntimeError("Unexpected AI response shape.")
 
@@ -171,5 +178,8 @@ def review_with_ai(source_code: str, language: str) -> dict[str, Any]:
 
     return {
         "summary": summary,
+        "time_complexity": tc,
+        "space_complexity": sc,
+        "refactored_code": refactored,
         "issues": [issue.model_dump() for issue in validated],
     }

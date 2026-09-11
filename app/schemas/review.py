@@ -1,5 +1,5 @@
 from enum import Enum
-from typing import Optional
+from typing import Any, Optional
 
 from pydantic import BaseModel
 
@@ -19,7 +19,6 @@ class IssueCategory(str, Enum):
     READABILITY = "READABILITY"
     MAINTAINABILITY = "MAINTAINABILITY"
     BEST_PRACTICE = "BEST_PRACTICE"
-    STYLE = "STYLE"
 
 
 class IssueSource(str, Enum):
@@ -42,8 +41,11 @@ class ReviewIssue(BaseModel):
 class ReviewResult(BaseModel):
     language: str
     summary: str
+    time_complexity: Optional[str] = None
+    space_complexity: Optional[str] = None
+    refactored_code: Optional[str] = None
     issues: list[ReviewIssue]
-    suggestions: list[str]
+    suggestions: list[str] = []
 
 
 class CodeFile(BaseModel):
@@ -52,4 +54,14 @@ class CodeFile(BaseModel):
     size: int
     code: str
     language: str
-    review: ReviewResult
+    review: dict[str, Any]
+
+
+class CodePasteRequest(BaseModel):
+    filename: str = "snippet.py"
+    language: Optional[str] = "python"
+    code: str
+
+
+class GithubImportRequest(BaseModel):
+    url: str
