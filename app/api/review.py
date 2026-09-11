@@ -127,7 +127,8 @@ async def upload_code(
         )
 
     db.commit()
-    # ─────────────────────────────────────────────────────────────────────────
+
+    review["id"] = record.id
 
     return {
         "filename": file.filename,
@@ -191,6 +192,8 @@ async def paste_code(
         )
 
     db.commit()
+
+    review["id"] = record.id
 
     return {
         "filename": filename,

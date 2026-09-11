@@ -136,14 +136,14 @@ export default function DashboardPage() {
       form.append('file', file);
       const { data } = await api.post('/api/v1/reviews/upload', form);
       const formatted = {
-        id: data.review?.id || Date.now(),
+        id: data.review?.id || data.id || Date.now(),
         filename: data.filename,
         language: data.language,
-        summary: data.review.summary,
-        time_complexity: data.review.time_complexity,
-        space_complexity: data.review.space_complexity,
-        refactored_code: data.review.refactored_code,
-        issues: data.review.issues || []
+        summary: data.review?.summary,
+        time_complexity: data.review?.time_complexity,
+        space_complexity: data.review?.space_complexity,
+        refactored_code: data.review?.refactored_code,
+        issues: data.review?.issues || []
       };
       setActiveReview(formatted);
       fetchReviews();
@@ -163,18 +163,18 @@ export default function DashboardPage() {
     setLoading(true);
     try {
       const { data } = await api.post('/api/v1/reviews/paste', {
-        filename: pasteFilename,
+        filename: pasteFilename.trim() || 'auth.py',
         code: pasteCode
       });
       const formatted = {
-        id: data.review?.id || Date.now(),
+        id: data.review?.id || data.id || Date.now(),
         filename: data.filename,
         language: data.language,
-        summary: data.review.summary,
-        time_complexity: data.review.time_complexity,
-        space_complexity: data.review.space_complexity,
-        refactored_code: data.review.refactored_code,
-        issues: data.review.issues || []
+        summary: data.review?.summary,
+        time_complexity: data.review?.time_complexity,
+        space_complexity: data.review?.space_complexity,
+        refactored_code: data.review?.refactored_code,
+        issues: data.review?.issues || []
       };
       setActiveReview(formatted);
       fetchReviews();
