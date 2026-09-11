@@ -32,7 +32,7 @@ class ReviewIssue(BaseModel):
     severity: Severity
     category: IssueCategory
     message: str
-    line: Optional[int] = None
+    line: Optional[Any] = None
     column: Optional[int] = None
     explanation: Optional[str] = None
     suggestion: Optional[str] = None

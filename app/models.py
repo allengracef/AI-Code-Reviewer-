@@ -80,7 +80,7 @@ class IssueRecord(Base):
     severity: Mapped[str] = mapped_column(String(20), nullable=False)    # LOW | MEDIUM | HIGH | CRITICAL
     category: Mapped[str] = mapped_column(String(50), nullable=False)    # BUG | SECURITY | …
     message: Mapped[str] = mapped_column(Text, nullable=False)
-    line: Mapped[int | None] = mapped_column(Integer, nullable=True)
+    line: Mapped[str | None] = mapped_column(String(100), nullable=True)
     column: Mapped[int | None] = mapped_column(Integer, nullable=True)
     code: Mapped[str | None] = mapped_column(Text, nullable=True)
     explanation: Mapped[str | None] = mapped_column(Text, nullable=True)

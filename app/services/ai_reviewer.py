@@ -72,7 +72,8 @@ def review_with_ai(source_code: str, language: str) -> dict[str, Any]:
         "9. Look for incorrect error handling and resource management.\n"
         "10. Look for design choices that make the code difficult to maintain.\n"
         "11. Do not invent problems that are not supported by the code.\n"
-        "12. If the code is good, return an empty issues array instead of inventing issues.\n\n"
+        "12. If the code is good, return an empty issues array instead of inventing issues.\n"
+        "13. If the same issue occurs at multiple lines, return a single issue object, set 'line' to a string listing all affected lines (e.g. '5, 12, 20'), and detail all occurrences in the explanation.\n\n"
 
         "Severity guidelines:\n"
         "- LOW: Minor issue with limited impact.\n"

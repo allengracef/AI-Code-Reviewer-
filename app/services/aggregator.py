@@ -7,30 +7,30 @@ def _word_set(message: str | None) -> set[str]:
     return set(message.lower().split())
 
 
-def _is_duplicate(
+def _extract_lines(val: Any) -> list[int]:
+    if val is None:
+        return []
+    if isinstance(val, int):
+        return [val]
+    if isinstance(val, str):
+        nums = []
+        cleaned = val.replace("Lines", "").replace("Line", "").replace("L", "")
+        for part in cleaned.split(","):
+            part = part.strip()
+            if part.isdigit():
+                nums.append(int(part))
+        return nums
+    return []
+
+
+def _is_duplicate_or_same_issue(
     issue: dict[str, Any],
     existing: dict[str, Any],
 ) -> bool:
     """
-    Determine whether two findings represent the same issue.
-
-    Two issues are considered duplicates when they share:
-    - the same line number, AND
-    - the same category, AND
-    - message word overlap of at least 60 %
-
-    The fuzzy message check handles AI paraphrasing the same
-    underlying finding with different wording.
+    Determine whether two findings represent the same issue concept,
+    either on the same line or across different lines.
     """
-    issue_line = issue.get("line")
-    existing_line = existing.get("line")
-
-    if issue_line is None or existing_line is None:
-        return False
-
-    if issue_line != existing_line:
-        return False
-
     if issue.get("category") != existing.get("category"):
         return False
 
@@ -38,10 +38,12 @@ def _is_duplicate(
     b = _word_set(existing.get("message"))
 
     if not a or not b:
+        if issue.get("code") and existing.get("code"):
+            return issue.get("code") == existing.get("code")
         return False
 
     overlap = len(a & b) / max(len(a), len(b))
-    return overlap >= 0.6
+    return overlap >= 0.55 or issue.get("message") == existing.get("message")
 
 
 def aggregate_issues(
@@ -49,23 +51,54 @@ def aggregate_issues(
     ai_issues: list[dict[str, Any]],
 ) -> list[dict[str, Any]]:
     """
-    Combine static-analysis and AI findings while removing duplicates.
-
-    AI findings are preferred over static ones when they overlap because
-    they contain richer explanations and actionable suggestions.
+    Combine static-analysis and AI findings, deduplicate and group same issues
+    across multiple lines into a single issue entry listing all affected line numbers.
     """
-    unique_issues: list[dict[str, Any]] = list(static_issues)
+    all_raw_issues = list(static_issues) + list(ai_issues)
+    grouped_issues: list[dict[str, Any]] = []
 
-    for ai_issue in ai_issues:
-        duplicate_index = next(
-            (i for i, existing in enumerate(unique_issues) if _is_duplicate(ai_issue, existing)),
+    for issue in all_raw_issues:
+        match_index = next(
+            (i for i, existing in enumerate(grouped_issues) if _is_duplicate_or_same_issue(issue, existing)),
             None,
         )
 
-        if duplicate_index is None:
-            unique_issues.append(ai_issue)
+        if match_index is None:
+            new_issue = dict(issue)
+            lines = _extract_lines(new_issue.get("line"))
+            new_issue["_lines"] = lines
+            grouped_issues.append(new_issue)
         else:
-            # Replace the static finding with the richer AI finding.
-            unique_issues[duplicate_index] = ai_issue
+            existing = grouped_issues[match_index]
+            
+            # Prefer AI finding metadata if existing is static and current is AI
+            if existing.get("source") == "STATIC_ANALYSIS" and issue.get("source") == "AI":
+                lines = existing.get("_lines", []) + _extract_lines(issue.get("line"))
+                existing = dict(issue)
+                existing["_lines"] = lines
+                grouped_issues[match_index] = existing
+            else:
+                existing.get("_lines", []).extend(_extract_lines(issue.get("line")))
+                if not existing.get("explanation") and issue.get("explanation"):
+                    existing["explanation"] = issue.get("explanation")
+                if not existing.get("suggestion") and issue.get("suggestion"):
+                    existing["suggestion"] = issue.get("suggestion")
 
-    return unique_issues
+    # Format final line numbers and location summaries
+    final_issues: list[dict[str, Any]] = []
+    for issue in grouped_issues:
+        lines = sorted(list(set(issue.pop("_lines", []))))
+        if lines:
+            if len(lines) == 1:
+                issue["line"] = lines[0]
+            else:
+                formatted_lines = ", ".join(str(n) for n in lines)
+                issue["line"] = formatted_lines
+                loc_str = f"Found on lines: {formatted_lines}"
+                exp = issue.get("explanation") or ""
+                if loc_str not in exp:
+                    issue["explanation"] = f"{exp}\n\n({loc_str})".strip() if exp else loc_str
+
+        final_issues.append(issue)
+
+    return final_issues

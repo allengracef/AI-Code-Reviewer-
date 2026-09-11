@@ -137,4 +137,52 @@ def test_aggregate_issues_keeps_findings_without_line_numbers():
 
     result = aggregate_issues(static_issues, ai_issues)
 
-    assert len(result) == 2
+    assert len(result) == 1
+    assert result[0]["source"] == "AI"
+
+
+def test_aggregate_issues_groups_same_issue_across_different_lines():
+    static_issues = [
+        {
+            "code": "F821",
+            "severity": "LOW",
+            "source": "STATIC_ANALYSIS",
+            "category": "BUG",
+            "message": "Undefined variable `x`",
+            "line": 5,
+            "column": 1,
+            "explanation": "Variable is not defined.",
+            "suggestion": "Define `x`.",
+        },
+        {
+            "code": "F821",
+            "severity": "LOW",
+            "source": "STATIC_ANALYSIS",
+            "category": "BUG",
+            "message": "Undefined variable `x`",
+            "line": 15,
+            "column": 1,
+            "explanation": "Variable is not defined.",
+            "suggestion": "Define `x`.",
+        },
+    ]
+
+    ai_issues = [
+        {
+            "code": "AI002",
+            "severity": "MEDIUM",
+            "source": "AI",
+            "category": "BUG",
+            "message": "Undefined variable `x`",
+            "line": 25,
+            "column": 1,
+            "explanation": "Variable `x` referenced without definition.",
+            "suggestion": "Initialize `x` beforehand.",
+        }
+    ]
+
+    result = aggregate_issues(static_issues, ai_issues)
+
+    assert len(result) == 1
+    assert result[0]["line"] == "5, 15, 25"
+    assert "Found on lines: 5, 15, 25" in result[0]["explanation"]

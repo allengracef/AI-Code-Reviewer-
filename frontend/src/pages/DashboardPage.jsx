@@ -700,7 +700,11 @@ function ReviewDetail({ review, isFavorite, onToggleFav }) {
                 </span>
                 <span className="rd-cat-badge">{issue.category}</span>
                 <span className="rd-src-badge">{SOURCE_LABEL[issue.source] || issue.source}</span>
-                {issue.line && <span className="rd-line-badge">L{issue.line}</span>}
+                {issue.line && (
+                  <span className="rd-line-badge">
+                    {String(issue.line).includes(',') ? `Lines ${issue.line}` : `L${issue.line}`}
+                  </span>
+                )}
                 <button className="rd-more-btn"><MoreHorizontal size={16} /></button>
               </div>
 
