@@ -49,6 +49,13 @@ class ReviewRecord(Base):
     time_complexity: Mapped[str | None] = mapped_column(String(50), nullable=True)
     space_complexity: Mapped[str | None] = mapped_column(String(50), nullable=True)
     refactored_code: Mapped[str | None] = mapped_column(Text, nullable=True)
+    risk_score: Mapped[int | None] = mapped_column(Integer, nullable=True)      # 0-100 Code Risk Score
+    risk_level: Mapped[str | None] = mapped_column(String(50), nullable=True)  # Low | Moderate | High | Critical
+    analysis_confidence: Mapped[int | None] = mapped_column(Integer, nullable=True)  # 0-100 Evidence-Weighted Confidence
+    analysis_coverage: Mapped[int | None] = mapped_column(Integer, nullable=True)    # 0-100% Analysis Coverage
+    detected_framework: Mapped[str | None] = mapped_column(String(100), nullable=True)
+    confidence_breakdown_json: Mapped[str | None] = mapped_column(Text, nullable=True)
+    unknown_zones_json: Mapped[str | None] = mapped_column(Text, nullable=True)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
         nullable=False,

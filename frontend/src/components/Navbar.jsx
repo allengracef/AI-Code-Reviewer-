@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
 import { 
-  Box, 
   LayoutGrid, 
   ChevronDown,
   LogOut
@@ -38,7 +37,7 @@ export default function Navbar() {
       {/* Brand Logo */}
       <Link to="/" className="glass-brand">
         <div className="glass-logo-box">
-          <Box size={18} color="#fff" />
+          <img src="/favicon.png" alt="BugLens" style={{ width: 18, height: 18, objectFit: 'contain' }} />
         </div>
         <span className="glass-brand-title">BugLens</span>
       </Link>

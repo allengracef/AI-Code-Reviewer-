@@ -1,6 +1,7 @@
 from app.services.aggregator import aggregate_issues
 from app.services.analyzer import analyze_java, analyze_javascript, analyze_python
 from app.services.ai_reviewer import review_with_ai
+from app.services.confidence import compute_evidence_confidence
 
 
 def review_code(source_code: str, language: str) -> dict:
@@ -8,7 +9,9 @@ def review_code(source_code: str, language: str) -> dict:
     Run static analysis (if available) and AI review for the given source code.
 
     Returns a dict with:
-        language, summary, time_complexity, space_complexity, refactored_code, issues
+        language, summary, time_complexity, space_complexity, refactored_code,
+        issues, risk_score, risk_level, analysis_confidence, analysis_coverage,
+        detected_framework, confidence_breakdown, unknown_zones
     """
     static_issues: list[dict] = []
 
@@ -41,6 +44,17 @@ def review_code(source_code: str, language: str) -> dict:
 
     issues = aggregate_issues(static_issues, ai_issues)
 
+    # ── Compute Evidence-Weighted Confidence & Risk ───────────────────────────
+    confidence_data = compute_evidence_confidence(
+        source_code=source_code,
+        language=language,
+        static_issues=static_issues,
+        ai_issues=ai_issues,
+        combined_issues=issues,
+        time_complexity=tc,
+        space_complexity=sc,
+    )
+
     return {
         "language": language,
         "summary": summary,
@@ -48,4 +62,13 @@ def review_code(source_code: str, language: str) -> dict:
         "space_complexity": sc,
         "refactored_code": refactored,
         "issues": issues,
+        # Evidence-Weighted Confidence & Risk Metrics
+        "risk_score": confidence_data["risk_score"],
+        "risk_level": confidence_data["risk_level"],
+        "analysis_confidence": confidence_data["analysis_confidence"],
+        "analysis_coverage": confidence_data["analysis_coverage"],
+        "detected_framework": confidence_data["detected_framework"],
+        "confidence_breakdown": confidence_data["confidence_breakdown"],
+        "unknown_zones": confidence_data["unknown_zones"],
     }
+

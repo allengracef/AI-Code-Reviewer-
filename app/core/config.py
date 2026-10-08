@@ -19,5 +19,10 @@ class Settings(BaseSettings):
     # Database
     DATABASE_URL: str = "sqlite:///./reviews.db"
 
+    # GitHub App (for the BugLens bot)
+    GITHUB_APP_ID: str = ""                 # e.g. "123456"
+    GITHUB_PRIVATE_KEY: str = ""            # PEM text of your GitHub App's private key
+    GITHUB_WEBHOOK_SECRET: str = ""         # The secret you set when creating the App
+
 
 settings = Settings()

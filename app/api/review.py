@@ -32,6 +32,20 @@ def _get_user_review_or_404(review_id: int, user: User, db: Session) -> ReviewRe
 
 
 def _serialize_review(r: ReviewRecord, include_issues: bool = True) -> dict:
+    import json
+    confidence_breakdown = None
+    unknown_zones = None
+    if r.confidence_breakdown_json:
+        try:
+            confidence_breakdown = json.loads(r.confidence_breakdown_json)
+        except Exception:
+            confidence_breakdown = None
+    if r.unknown_zones_json:
+        try:
+            unknown_zones = json.loads(r.unknown_zones_json)
+        except Exception:
+            unknown_zones = None
+
     base = {
         "id": r.id,
         "filename": r.filename,
@@ -40,6 +54,13 @@ def _serialize_review(r: ReviewRecord, include_issues: bool = True) -> dict:
         "time_complexity": r.time_complexity,
         "space_complexity": r.space_complexity,
         "refactored_code": r.refactored_code,
+        "risk_score": r.risk_score,
+        "risk_level": r.risk_level,
+        "analysis_confidence": r.analysis_confidence,
+        "analysis_coverage": r.analysis_coverage,
+        "detected_framework": r.detected_framework,
+        "confidence_breakdown": confidence_breakdown,
+        "unknown_zones": unknown_zones,
         "created_at": r.created_at,
         "updated_at": r.updated_at,
         "issue_count": len(r.issues),
@@ -98,6 +119,10 @@ async def upload_code(
     review = await run_in_threadpool(review_code, source_code, language)
 
     # ── Persist to database ──────────────────────────────────────────────────
+    import json
+    confidence_breakdown_json = json.dumps(review.get("confidence_breakdown")) if review.get("confidence_breakdown") else None
+    unknown_zones_json = json.dumps(review.get("unknown_zones")) if review.get("unknown_zones") else None
+
     record = ReviewRecord(
         user_id=current_user.id,
         filename=filename,
@@ -106,6 +131,13 @@ async def upload_code(
         time_complexity=review.get("time_complexity"),
         space_complexity=review.get("space_complexity"),
         refactored_code=review.get("refactored_code"),
+        risk_score=review.get("risk_score"),
+        risk_level=review.get("risk_level"),
+        analysis_confidence=review.get("analysis_confidence"),
+        analysis_coverage=review.get("analysis_coverage"),
+        detected_framework=review.get("detected_framework"),
+        confidence_breakdown_json=confidence_breakdown_json,
+        unknown_zones_json=unknown_zones_json,
     )
     db.add(record)
     db.flush()  # populate record.id without committing yet
@@ -147,12 +179,6 @@ async def paste_code(
     current_user: User = Depends(get_current_user),
 ):
     """Review pasted code or fetched code content directly."""
-    filename = payload.filename or "snippet.py"
-    extension = "." + filename.split(".")[-1].lower() if "." in filename else ".py"
-    if extension not in ALLOWED_EXTENSIONS:
-        extension = ".py"
-        filename = filename + ".py"
-
     source_code = payload.code
     if not source_code.strip():
         raise HTTPException(
@@ -160,8 +186,37 @@ async def paste_code(
             detail="Code snippet cannot be empty.",
         )
 
-    language = detect_language(extension)
+    # Determine extension if present
+    raw_filename = (payload.filename or "").strip()
+    ext = ("." + raw_filename.split(".")[-1].lower()) if "." in raw_filename else None
+
+    # Detect language accurately from explicit setting, filename, or code contents
+    language = detect_language(
+        extension=ext,
+        code=source_code,
+        explicit_language=payload.language,
+    )
+
+    # Map language to suitable default filename extension
+    ext_map = {"python": ".py", "javascript": ".js", "java": ".java"}
+    proper_ext = ext_map.get(language, ".py")
+
+    if not raw_filename:
+        filename = f"snippet{proper_ext}"
+    elif "." not in raw_filename:
+        filename = f"{raw_filename}{proper_ext}"
+    else:
+        file_ext = "." + raw_filename.split(".")[-1].lower()
+        if file_ext not in ALLOWED_EXTENSIONS:
+            filename = raw_filename.rsplit(".", 1)[0] + proper_ext
+        else:
+            filename = raw_filename
+
     review = await run_in_threadpool(review_code, source_code, language)
+
+    import json
+    confidence_breakdown_json = json.dumps(review.get("confidence_breakdown")) if review.get("confidence_breakdown") else None
+    unknown_zones_json = json.dumps(review.get("unknown_zones")) if review.get("unknown_zones") else None
 
     record = ReviewRecord(
         user_id=current_user.id,
@@ -171,6 +226,13 @@ async def paste_code(
         time_complexity=review.get("time_complexity"),
         space_complexity=review.get("space_complexity"),
         refactored_code=review.get("refactored_code"),
+        risk_score=review.get("risk_score"),
+        risk_level=review.get("risk_level"),
+        analysis_confidence=review.get("analysis_confidence"),
+        analysis_coverage=review.get("analysis_coverage"),
+        detected_framework=review.get("detected_framework"),
+        confidence_breakdown_json=confidence_breakdown_json,
+        unknown_zones_json=unknown_zones_json,
     )
     db.add(record)
     db.flush()
@@ -262,6 +324,10 @@ async def import_from_github(
     language = detect_language(extension)
     review = await run_in_threadpool(review_code, source_code, language)
 
+    import json
+    confidence_breakdown_json = json.dumps(review.get("confidence_breakdown")) if review.get("confidence_breakdown") else None
+    unknown_zones_json = json.dumps(review.get("unknown_zones")) if review.get("unknown_zones") else None
+
     record = ReviewRecord(
         user_id=current_user.id,
         filename=filename,
@@ -270,6 +336,13 @@ async def import_from_github(
         time_complexity=review.get("time_complexity"),
         space_complexity=review.get("space_complexity"),
         refactored_code=review.get("refactored_code"),
+        risk_score=review.get("risk_score"),
+        risk_level=review.get("risk_level"),
+        analysis_confidence=review.get("analysis_confidence"),
+        analysis_coverage=review.get("analysis_coverage"),
+        detected_framework=review.get("detected_framework"),
+        confidence_breakdown_json=confidence_breakdown_json,
+        unknown_zones_json=unknown_zones_json,
     )
     db.add(record)
     db.flush()

@@ -272,9 +272,21 @@
   gap: 0.75rem;
 }
 
-.paste-header {
-  display: flex;
-  gap: 0.75rem;
+.paste-lang-select {
+  background: rgba(15, 23, 42, 0.7);
+  border: 1px solid rgba(59, 130, 246, 0.4);
+  border-radius: 8px;
+  padding: 0.55rem 0.85rem;
+  color: #38bdf8;
+  font-weight: 600;
+  font-size: 0.85rem;
+  outline: none;
+  cursor: pointer;
+}
+
+.paste-lang-select option {
+  background: #0f172a;
+  color: #fff;
 }
 
 .paste-filename-input, .github-url-input {
@@ -952,4 +964,387 @@
 .setting-desc {
   font-size: 0.82rem;
   color: rgba(255, 255, 255, 0.5);
+}
+
+/* Complexity Metrics */
+
+/* ── Primary Metrics Grid (Risk, Confidence, Coverage) ────────────────────── */
+.rd-framework-badge {
+  background: rgba(56, 189, 248, 0.15);
+  border: 1px solid rgba(56, 189, 248, 0.35);
+  color: #38bdf8;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+}
+
+.rd-primary-metrics-grid {
+  display: grid;
+  grid-template-columns: 1.1fr 1.3fr 1fr;
+  gap: 1rem;
+  margin-bottom: 1.25rem;
+}
+
+@media (max-width: 900px) {
+  .rd-primary-metrics-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.primary-metric-card {
+  background: rgba(15, 23, 42, 0.75);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 14px;
+  padding: 1rem 1.15rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
+  transition: transform 0.2s, border-color 0.2s;
+}
+
+.primary-metric-card:hover {
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.primary-metric-card.risk-low {
+  background: linear-gradient(145deg, rgba(16, 185, 129, 0.12), rgba(15, 23, 42, 0.85));
+  border-color: rgba(16, 185, 129, 0.35);
+}
+
+.primary-metric-card.risk-moderate {
+  background: linear-gradient(145deg, rgba(245, 158, 11, 0.12), rgba(15, 23, 42, 0.85));
+  border-color: rgba(245, 158, 11, 0.35);
+}
+
+.primary-metric-card.risk-high {
+  background: linear-gradient(145deg, rgba(249, 115, 22, 0.15), rgba(15, 23, 42, 0.85));
+  border-color: rgba(249, 115, 22, 0.4);
+}
+
+.primary-metric-card.risk-critical {
+  background: linear-gradient(145deg, rgba(239, 68, 68, 0.18), rgba(15, 23, 42, 0.85));
+  border-color: rgba(239, 68, 68, 0.5);
+}
+
+.primary-metric-card.confidence {
+  background: linear-gradient(145deg, rgba(56, 189, 248, 0.12), rgba(15, 23, 42, 0.85));
+  border-color: rgba(56, 189, 248, 0.35);
+}
+
+.primary-metric-card.coverage {
+  background: linear-gradient(145deg, rgba(74, 222, 128, 0.12), rgba(15, 23, 42, 0.85));
+  border-color: rgba(74, 222, 128, 0.35);
+}
+
+.pmc-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.6rem;
+}
+
+.pmc-title-box {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.pmc-title {
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: rgba(255, 255, 255, 0.75);
+}
+
+.pmc-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.2rem 0.55rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.pmc-badge.risk-low {
+  background: rgba(16, 185, 129, 0.2);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.4);
+}
+
+.pmc-badge.risk-moderate {
+  background: rgba(245, 158, 11, 0.2);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.4);
+}
+
+.pmc-badge.risk-high {
+  background: rgba(249, 115, 22, 0.2);
+  color: #fb923c;
+  border: 1px solid rgba(249, 115, 22, 0.4);
+}
+
+.pmc-badge.risk-critical {
+  background: rgba(239, 68, 68, 0.25);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.5);
+}
+
+.pmc-badge.evidence-badge {
+  background: rgba(56, 189, 248, 0.2);
+  color: #38bdf8;
+  border: 1px solid rgba(56, 189, 248, 0.4);
+}
+
+.pmc-badge.coverage-badge {
+  background: rgba(74, 222, 128, 0.2);
+  color: #4ade80;
+  border: 1px solid rgba(74, 222, 128, 0.4);
+}
+
+.pmc-main {
+  display: flex;
+  align-items: baseline;
+  gap: 0.25rem;
+  margin-bottom: 0.35rem;
+}
+
+.pmc-val {
+  font-size: 2rem;
+  font-weight: 900;
+  color: #fff;
+  line-height: 1;
+}
+
+.pmc-max {
+  font-size: 0.95rem;
+  color: rgba(255, 255, 255, 0.45);
+}
+
+.pmc-desc {
+  font-size: 0.78rem;
+  color: rgba(255, 255, 255, 0.6);
+  margin: 0;
+  line-height: 1.35;
+}
+
+.pmc-breakdown-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: rgba(56, 189, 248, 0.12);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  color: #38bdf8;
+  font-size: 0.78rem;
+  font-weight: 600;
+  padding: 0.3rem 0.65rem;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 0.25rem;
+  transition: background 0.15s;
+}
+
+.pmc-breakdown-toggle:hover {
+  background: rgba(56, 189, 248, 0.22);
+}
+
+.pmc-progress-track {
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+  overflow: hidden;
+  margin-top: 0.35rem;
+}
+
+.pmc-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981, #4ade80);
+  border-radius: 9999px;
+  transition: width 0.4s ease;
+}
+
+/* ── Evidence Breakdown Panel ────────────────────────────────────────────── */
+.confidence-breakdown-panel {
+  background: rgba(15, 23, 42, 0.9);
+  border: 1px solid rgba(56, 189, 248, 0.3);
+  border-radius: 12px;
+  padding: 1.15rem;
+  margin-bottom: 1.25rem;
+  animation: fadeIn 0.25s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.cbp-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.85rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  padding-bottom: 0.65rem;
+}
+
+.cbp-title-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.cbp-title-group h3 {
+  font-size: 0.95rem;
+  font-weight: 700;
+  margin: 0;
+  color: #fff;
+}
+
+.cbp-score-pill {
+  font-size: 0.82rem;
+  color: rgba(255, 255, 255, 0.7);
+  background: rgba(0, 0, 0, 0.35);
+  padding: 0.25rem 0.65rem;
+  border-radius: 9999px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.cbp-score-pill strong {
+  color: #38bdf8;
+  font-size: 0.95rem;
+}
+
+.cbp-table-wrap {
+  overflow-x: auto;
+}
+
+.cbp-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.82rem;
+  text-align: left;
+}
+
+.cbp-table th {
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 600;
+  padding: 0.5rem 0.65rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.cbp-table td {
+  padding: 0.55rem 0.65rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+  color: #e2e8f0;
+}
+
+.cbp-name-cell {
+  color: #fff;
+}
+
+.cbp-weight-cell {
+  color: rgba(255, 255, 255, 0.6);
+  font-family: monospace;
+}
+
+.cbp-points-cell {
+  font-family: monospace;
+}
+
+.points-plus {
+  color: #38bdf8;
+  font-weight: 700;
+}
+
+.points-max {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.cbp-status-tag {
+  display: inline-block;
+  font-size: 0.72rem;
+  font-weight: 700;
+  padding: 0.15rem 0.5rem;
+  border-radius: 9999px;
+  text-transform: uppercase;
+}
+
+.status-verified, .status-resolved, .status-strong, .status-complete, .status-identified, .status-present, .status-consistent {
+  background: rgba(16, 185, 129, 0.18);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.35);
+}
+
+.status-partial, .status-moderate, .status-no-inline-tests, .status-assessed {
+  background: rgba(245, 158, 11, 0.18);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.35);
+}
+
+.status-weak, .status-failed {
+  background: rgba(239, 68, 68, 0.2);
+  color: #f87171;
+  border: 1px solid rgba(239, 68, 68, 0.4);
+}
+
+.cbp-details-cell {
+  color: rgba(255, 255, 255, 0.65);
+}
+
+/* ── Unknown Code Zone Alert ──────────────────────────────────────────────── */
+.unknown-zones-alert {
+  background: rgba(245, 158, 11, 0.08);
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  border-radius: 12px;
+  padding: 1rem 1.15rem;
+  margin-bottom: 1.25rem;
+}
+
+.uza-header {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+}
+
+.uza-header h4 {
+  margin: 0;
+  font-size: 0.88rem;
+  font-weight: 700;
+  color: #fbbf24;
+}
+
+.uza-subtext {
+  font-size: 0.8rem;
+  color: rgba(255, 255, 255, 0.7);
+  margin: 0 0 0.55rem 0;
+}
+
+.uza-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.uza-list li {
+  display: flex;
+  align-items: baseline;
+  gap: 0.5rem;
+  font-size: 0.8rem;
+  color: #fde68a;
+  line-height: 1.35;
+}
+
+.uza-bullet {
+  font-size: 0.65rem;
+  color: #f59e0b;
 }

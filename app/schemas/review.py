@@ -44,6 +44,14 @@ class ReviewResult(BaseModel):
     time_complexity: Optional[str] = None
     space_complexity: Optional[str] = None
     refactored_code: Optional[str] = None
+    # Evidence-Weighted Confidence & Risk Metrics
+    risk_score: Optional[int] = None           # 0-100 Code Risk Score
+    risk_level: Optional[str] = None           # Low | Moderate | High | Critical
+    analysis_confidence: Optional[int] = None  # 0-100 Evidence-Weighted Confidence
+    analysis_coverage: Optional[int] = None    # 0-100% Analysis Coverage
+    detected_framework: Optional[str] = None   # Framework identifier
+    confidence_breakdown: Optional[dict[str, Any]] = None  # 7-signal deterministic breakdown
+    unknown_zones: Optional[list[str]] = None  # Factors reducing confidence
     issues: list[ReviewIssue]
     suggestions: list[str] = []
 
@@ -58,8 +66,8 @@ class CodeFile(BaseModel):
 
 
 class CodePasteRequest(BaseModel):
-    filename: str = "snippet.py"
-    language: Optional[str] = "python"
+    filename: Optional[str] = None
+    language: Optional[str] = None
     code: str
 
 

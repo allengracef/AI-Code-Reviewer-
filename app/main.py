@@ -6,6 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.auth import router as auth_router
 from app.api.review import router as review_router
+from app.api.webhook import router as webhook_router
 from app.database import Base, engine
 
 load_dotenv()
@@ -45,6 +46,11 @@ app.include_router(
     review_router,
     prefix="/api/v1/reviews",
     tags=["Reviews"],
+)
+app.include_router(
+    webhook_router,
+    prefix="/webhook",
+    tags=["Webhook"],
 )
 
 
